@@ -1,11 +1,17 @@
 import { Link, useNavigate } from "react-router-dom";
 import React, { useState } from "react";
+import {
+  signInStart,
+  signInSuccess,
+  signInFailure,
+} from "../redux/user/userSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 const SignIn = () => {
   const [formData, setFormData] = useState({});
-  const [error, setError] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const { loading, error } = useSelector((state) => state.user);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   // handling inputs
   const handleChange = (e) => {
@@ -16,8 +22,7 @@ const SignIn = () => {
     e.preventDefault();
 
     try {
-      setLoading(true);
-      setError(false);
+      dispatch(signInStart());
 
       // making the POST request
       const res = await fetch("/api/auth/signin", {
@@ -26,18 +31,16 @@ const SignIn = () => {
         body: JSON.stringify(formData),
       });
       const data = await res.json();
-      // handling loading effect
-      setLoading(false);
 
       // since the json sent from backend is success property which is our error from backend, we have to manually add this
       if (data.success === false) {
-        setError(true);
+        dispatch(signInFailure(data));
         return;
       }
+      dispatch(signInSuccess(data));
       navigate("/");
-    } catch (err) {
-      setLoading(false);
-      setError(true);
+    } catch (error) {
+      dispatch(signInFailure(error));
     }
   };
 
@@ -74,7 +77,9 @@ const SignIn = () => {
           <span className="text-blue-500">Sign Up</span>
         </Link>
       </div>
-      <p className="text-red-700 mt-6">{error && "Something went wrong."}</p>
+      <p className="text-red-700 mt-6">
+        {error ? error.message || "Something went wrong." : ""}
+      </p>
     </div>
   );
 };
