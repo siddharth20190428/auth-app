@@ -33,7 +33,7 @@ export const signin = async (req, res, next) => {
     // validUser gives a lot of unnecessary info so use validUser._doc
     const { password: hashedPassword, ...rest } = validUser._doc;
     // we add session expiry
-    const expiryDate = new Date(Date.now + 3600000); // 1 hour
+    const expiryDate = new Date(Date.now() + 3600000); // 1 hour
     // httpOnly is used as an additional security, so that no 3rd party app can change this cookie
     res
       .cookie("access_token", token, { httpOnly: true, expires: expiryDate })

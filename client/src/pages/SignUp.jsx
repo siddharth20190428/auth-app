@@ -1,10 +1,11 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import React, { useState } from "react";
 
 const SignUp = () => {
   const [formData, setFormData] = useState({});
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   // handling inputs
   const handleChange = (e) => {
@@ -30,10 +31,11 @@ const SignUp = () => {
       setLoading(false);
 
       // since the json sent from backend is success property which is our error from backend, we have to manually add this
-      if (!data.success) {
+      if (data.success === false) {
         setError(true);
         return;
       }
+      navigate("/signin");
     } catch (err) {
       setLoading(false);
       setError(true);
@@ -76,7 +78,7 @@ const SignUp = () => {
       </form>
       <div className="flex gap-2 mt-6">
         <p>Have an Account?</p>
-        <Link to="/signIn">
+        <Link to="/signin">
           <span className="text-blue-500">Sign In</span>
         </Link>
       </div>
